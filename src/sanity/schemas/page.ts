@@ -1,34 +1,57 @@
 import { defineType, defineField } from "sanity";
 
+const blockTypes = [
+  "heroBlock",
+  "richTextBlock",
+  "statsBlock",
+  "timelineBlock",
+  "valuesBlock",
+  "ctaBlock",
+  "sponsorsBlock",
+  "teamsBlock",
+  "fixturesBlock",
+  "newsBlock",
+  "locationsBlock",
+  "committeeBlock",
+  "faqBlock",
+  "contactFormBlock",
+  "contactsBlock",
+  "documentsBlock",
+  "feesBlock",
+  "stepsBlock",
+  "galleryBlock",
+  "tabbedContentBlock",
+];
+
 export default defineType({
   name: "page",
   title: "Page",
   type: "document",
   fields: [
     defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      options: { source: "title" },
       description:
-        'Unique identifier like "home", "about", "join", "contact", "club-info", "locations"',
+        'Unique identifier like "home", "about", "join", "contact", "club-info", "locations", "teams", "news".',
     }),
-    defineField({ name: "title", title: "Title", type: "string" }),
     defineField({
-      name: "sections",
-      title: "Sections",
+      name: "seoDescription",
+      title: "SEO description",
+      type: "text",
+    }),
+    defineField({
+      name: "blocks",
+      title: "Blocks",
       type: "array",
-      of: [
-        {
-          type: "object",
-          name: "section",
-          fields: [
-            { name: "key", title: "Key", type: "string", description: 'e.g. "hero", "valuesIntro"' },
-            { name: "heading", title: "Heading", type: "string" },
-            { name: "body", title: "Body", type: "array", of: [{ type: "block" }] },
-          ],
-          preview: { select: { title: "key", subtitle: "heading" } },
-        },
-      ],
+      of: blockTypes.map((type) => ({ type })),
     }),
   ],
+  preview: { select: { title: "title", subtitle: "slug.current" } },
 });
