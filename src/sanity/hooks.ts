@@ -33,7 +33,18 @@ export function useSanityQuery<T>(query: string, params: Record<string, any> = {
 }
 
 const PAGE_QUERY = `*[_type == "page" && slug.current == $slug][0]{
-  _id, slug, title, sections
+  _id, title, slug,
+  blocks[]{
+    ...,
+    _type == "sponsorsBlock" => {
+      ...,
+      "sponsors": sponsors[]->{ _id, name, url, logo }
+    },
+    _type == "committeeBlock" => {
+      ...,
+      "members": members[]->{ _id, name, role, email, photo, order }
+    }
+  }
 }`;
 
 export function usePage(slug: string) {

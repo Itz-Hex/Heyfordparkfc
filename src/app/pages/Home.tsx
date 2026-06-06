@@ -1,27 +1,9 @@
-import { Hero } from "../components/Hero";
-import {
-  AboutStrip,
-  TeamsStrip,
-  JoinStrip,
-  LocationsStrip,
-  ClubInfoStrip,
-  ContactStrip,
-} from "../components/HomeSections";
-import { SponsorsStrip } from "../components/SponsorsStrip";
-import { NewsStrip } from "../components/NewsStrip";
+import { usePage } from "../../sanity/hooks";
+import { Blocks } from "../components/blocks/Blocks";
+import { PageSkeleton } from "../components/blocks/PageSkeleton";
 
 export function Home() {
-  return (
-    <>
-      <Hero />
-      <AboutStrip />
-      <NewsStrip />
-      <TeamsStrip />
-      <SponsorsStrip />
-      <JoinStrip />
-      <LocationsStrip />
-      <ClubInfoStrip />
-      <ContactStrip />
-    </>
-  );
+  const { data: page, loading } = usePage("home");
+  if (loading) return <PageSkeleton />;
+  return <Blocks blocks={page?.blocks ?? []} />;
 }
