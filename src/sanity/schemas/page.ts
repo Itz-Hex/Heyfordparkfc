@@ -2,11 +2,15 @@ import { defineType, defineField } from "sanity";
 
 const blockTypes = [
   "heroBlock",
+  "pageHeroBlock",
   "richTextBlock",
+  "splitContentBlock",
   "statsBlock",
   "timelineBlock",
   "valuesBlock",
   "ctaBlock",
+  "ctaCardsBlock",
+  "testimonialsBlock",
   "sponsorsBlock",
   "teamsBlock",
   "fixturesBlock",
