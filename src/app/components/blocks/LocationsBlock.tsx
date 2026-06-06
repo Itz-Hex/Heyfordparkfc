@@ -1,4 +1,4 @@
-import { MapPin, Car, Navigation, Info } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 
 export function LocationsBlock({ block }: { block: any }) {
   const venues: any[] = block?.locations || [];
@@ -34,18 +34,6 @@ export function LocationsBlock({ block }: { block: any }) {
                       <MapPin className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
                       <span>{v.address}</span>
                     </a>
-                  )}
-                  {v.parking && (
-                    <div className="mt-3 flex items-start gap-2 text-neutral-700">
-                      <Car className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
-                      <span>{v.parking}</span>
-                    </div>
-                  )}
-                  {v.note && (
-                    <div className="mt-3 flex items-start gap-2 text-neutral-700">
-                      <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
-                      <span>{v.note}</span>
-                    </div>
                   )}
                   {v.directionsUrl && (
                     <a href={v.directionsUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors" style={{ fontWeight: 600 }}>

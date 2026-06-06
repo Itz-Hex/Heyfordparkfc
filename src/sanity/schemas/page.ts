@@ -25,6 +25,13 @@ const blockTypes = [
   "stepsBlock",
   "galleryBlock",
   "tabbedContentBlock",
+  "joinProcessBlock",
+  "joinContactBlock",
+  "safeClubBlock",
+  "affiliationsBlock",
+  "contactDetailsBlock",
+  "findUsBlock",
+  "pressMediaBlock",
 ];
 
 export default defineType({

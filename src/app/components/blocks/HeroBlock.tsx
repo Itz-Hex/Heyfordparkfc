@@ -64,6 +64,17 @@ export function HeroBlock({ block }: { block: any }) {
             ))}
           </div>
         )}
+
+        {Array.isArray(block?.stats) && block.stats.length > 0 && (
+          <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-neutral-300">
+            {block.stats.map((s: any, i: number) => (
+              <div key={i}>
+                <span className="text-white" style={{ fontWeight: 700 }}>{s.value}</span>
+                {s.label && <> · {s.label}</>}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

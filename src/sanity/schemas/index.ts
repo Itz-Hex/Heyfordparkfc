@@ -28,6 +28,13 @@ import feesBlock from "./blocks/feesBlock";
 import stepsBlock from "./blocks/stepsBlock";
 import galleryBlock from "./blocks/galleryBlock";
 import tabbedContentBlock from "./blocks/tabbedContentBlock";
+import joinProcessBlock from "./blocks/joinProcessBlock";
+import joinContactBlock from "./blocks/joinContactBlock";
+import safeClubBlock from "./blocks/safeClubBlock";
+import affiliationsBlock from "./blocks/affiliationsBlock";
+import contactDetailsBlock from "./blocks/contactDetailsBlock";
+import findUsBlock from "./blocks/findUsBlock";
+import pressMediaBlock from "./blocks/pressMediaBlock";
 
 export default [
   // Documents
@@ -61,4 +68,11 @@ export default [
   stepsBlock,
   galleryBlock,
   tabbedContentBlock,
+  joinProcessBlock,
+  joinContactBlock,
+  safeClubBlock,
+  affiliationsBlock,
+  contactDetailsBlock,
+  findUsBlock,
+  pressMediaBlock,
 ];

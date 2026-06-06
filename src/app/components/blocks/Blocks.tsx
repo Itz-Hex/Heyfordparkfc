@@ -22,6 +22,13 @@ import { FeesBlock } from "./FeesBlock";
 import { StepsBlock } from "./StepsBlock";
 import { GalleryBlock } from "./GalleryBlock";
 import { TabbedContentBlock } from "./TabbedContentBlock";
+import { JoinProcessBlock } from "./JoinProcessBlock";
+import { JoinContactBlock } from "./JoinContactBlock";
+import { SafeClubBlock } from "./SafeClubBlock";
+import { AffiliationsBlock } from "./AffiliationsBlock";
+import { ContactDetailsBlock } from "./ContactDetailsBlock";
+import { FindUsBlock } from "./FindUsBlock";
+import { PressMediaBlock } from "./PressMediaBlock";
 
 const REGISTRY: Record<string, React.ComponentType<{ block: any }>> = {
   heroBlock: HeroBlock,
@@ -48,6 +55,13 @@ const REGISTRY: Record<string, React.ComponentType<{ block: any }>> = {
   stepsBlock: StepsBlock,
   galleryBlock: GalleryBlock,
   tabbedContentBlock: TabbedContentBlock,
+  joinProcessBlock: JoinProcessBlock,
+  joinContactBlock: JoinContactBlock,
+  safeClubBlock: SafeClubBlock,
+  affiliationsBlock: AffiliationsBlock,
+  contactDetailsBlock: ContactDetailsBlock,
+  findUsBlock: FindUsBlock,
+  pressMediaBlock: PressMediaBlock,
 };
 
 export function Blocks({ blocks }: { blocks: any[] }) {
