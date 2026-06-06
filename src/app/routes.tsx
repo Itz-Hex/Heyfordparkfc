@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import { Root } from "./components/Root";
 import { Home } from "./pages/Home";
@@ -12,7 +13,17 @@ import { ClubInfoPage } from "./pages/ClubInfoPage";
 import { ContactPage } from "./pages/ContactPage";
 import { NotFound } from "./pages/NotFound";
 
+const StudioPage = lazy(() => import("../sanity/Studio"));
+
 export const router = createBrowserRouter([
+  {
+    path: "/studio/*",
+    element: (
+      <Suspense fallback={<div style={{ padding: 32 }}>Loading Studio…</div>}>
+        <StudioPage />
+      </Suspense>
+    ),
+  },
   {
     path: "/",
     Component: Root,

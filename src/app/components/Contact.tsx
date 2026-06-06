@@ -1,5 +1,7 @@
 import { ArrowRight, Facebook, Instagram, Mail } from "lucide-react";
 import { Link } from "react-router";
+import { usePage, getPageSection } from "../../sanity/hooks";
+import { PortableText } from "../../sanity/PortableText";
 
 const contacts = [
   { role: "Secretary", name: "Pete Ciechan", email: "secretary@heyfordparkfootballclub.co.uk" },
@@ -9,14 +11,21 @@ const contacts = [
 ];
 
 export function Contact() {
+  const { data: page } = usePage("contact");
+  const intro = getPageSection(page, "intro");
   return (
     <section className="py-20 lg:py-28 bg-neutral-50">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
         <div className="max-w-3xl">
           <div className="text-sm text-[#6b8a0a] mb-3" style={{ fontWeight: 600 }}>CONTACT US</div>
           <h2 className="text-neutral-900" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-            Get in touch.
+            {intro?.heading || "Get in touch."}
           </h2>
+          {intro?.body && (
+            <div className="mt-4 text-neutral-600 text-lg">
+              <PortableText value={intro.body} />
+            </div>
+          )}
         </div>
 
         <div className="mt-8 grid sm:grid-cols-2 gap-3">

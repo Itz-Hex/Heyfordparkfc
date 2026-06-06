@@ -4,18 +4,55 @@ import { getTeam } from "../data/teams";
 import { TeamSponsors } from "../components/TeamSponsors";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { NotFound } from "./NotFound";
+import { useSanityQuery } from "../../sanity/hooks";
+import { resolveImage } from "../../sanity/client";
+
+const TEAM_QUERY = `*[_type == "team" && slug.current == $slug][0]{
+  _id, title, slug, blurb, manager, trainingDay, trainingTime, matchDay, league,
+  heroImage, gallery,
+  "sponsors": sponsors[]->{ _id, name, url, logo }
+}`;
 
 export function TeamPage() {
   const { slug } = useParams();
-  const team = slug ? getTeam(slug) : undefined;
+  const { data, loading } = useSanityQuery<any>(TEAM_QUERY, { slug }, [slug]);
+  const fallback = slug ? getTeam(slug) : undefined;
+
+  if (loading && !data && !fallback) {
+    return <div className="p-12 text-neutral-500">Loading team…</div>;
+  }
+
+  // Compose team from sanity data with fallback
+  const team = data
+    ? {
+        name: data.title || fallback?.name || "",
+        blurb: data.blurb || fallback?.blurb || "",
+        manager: data.manager || fallback?.manager || "TBC",
+        trainingDay: data.trainingDay || fallback?.trainingDay || "TBC",
+        trainingTime: data.trainingTime || fallback?.trainingTime || "TBC",
+        matchDay: data.matchDay || fallback?.matchDay || "TBC",
+        league: data.league || fallback?.league || "TBC",
+        heroImage: data.heroImage || fallback?.heroImage,
+        gallery:
+          data.gallery && data.gallery.length > 0
+            ? data.gallery
+            : fallback?.gallery || [],
+        sponsors:
+          data.sponsors && data.sponsors.length > 0
+            ? data.sponsors.map((s: any) => ({ name: s.name, url: s.url || "#" }))
+            : fallback?.sponsors || [],
+      }
+    : fallback;
 
   if (!team) return <NotFound />;
+
+  const heroSrc = resolveImage(team.heroImage, 1920);
 
   return (
     <>
       <section className="relative overflow-hidden bg-neutral-900 text-white">
         <ImageWithFallback
-          src={team.heroImage}
+          src={heroSrc}
           alt={`${team.name} team`}
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
@@ -63,15 +100,18 @@ export function TeamPage() {
             <p className="mt-3 text-neutral-600">Photos from training, match days, and tournaments.</p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-            {team.gallery.map((src, i) => (
-              <div key={i} className={`overflow-hidden rounded-2xl bg-neutral-200 ${i === 0 ? "lg:col-span-2 lg:row-span-2 aspect-square lg:aspect-auto" : "aspect-[4/3]"}`}>
-                <ImageWithFallback
-                  src={src}
-                  alt={`${team.name} photo ${i + 1}`}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            ))}
+            {team.gallery.map((src: any, i: number) => {
+              const url = resolveImage(src, 1200);
+              return (
+                <div key={i} className={`overflow-hidden rounded-2xl bg-neutral-200 ${i === 0 ? "lg:col-span-2 lg:row-span-2 aspect-square lg:aspect-auto" : "aspect-[4/3]"}`}>
+                  <ImageWithFallback
+                    src={url}
+                    alt={`${team.name} photo ${i + 1}`}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

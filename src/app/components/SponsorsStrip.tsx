@@ -1,22 +1,20 @@
 import { Link } from "react-router";
 import { Handshake, ArrowRight } from "lucide-react";
+import { useSanityQuery } from "../../sanity/hooks";
+import { resolveImage } from "../../sanity/client";
 
-const sponsors = [
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-  "Acme Corporation",
-];
+const fallbackSponsors = Array.from({ length: 12 }, () => ({ name: "Acme Corporation", url: "#", logo: null }));
+
+const SPONSORS_QUERY = `*[_type == "sponsor"] | order(name asc) { _id, name, url, logo }`;
 
 export function SponsorsStrip() {
+  const { data, loading } = useSanityQuery<any[]>(SPONSORS_QUERY);
+
+  const sponsors =
+    data && data.length > 0
+      ? data.map((s) => ({ name: s.name || "", url: s.url || "#", logo: s.logo }))
+      : fallbackSponsors;
+
   return (
     <section className="py-20 lg:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
@@ -38,22 +36,37 @@ export function SponsorsStrip() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {sponsors.map((name, i) => (
-            <div
-              key={i}
-              className="aspect-[3/2] rounded-2xl bg-neutral-50 border border-neutral-200 hover:border-[#AFDC1C] hover:bg-[#AFDC1C]/5 transition-colors flex flex-col items-center justify-center p-4 text-center"
-            >
-              <div className="w-12 h-12 rounded-xl bg-white border border-neutral-200 flex items-center justify-center mb-3">
-                <Handshake className="w-6 h-6 text-[#6b8a0a]" />
-              </div>
-              <div className="text-neutral-900 text-sm" style={{ fontWeight: 600 }}>
-                {name}
-              </div>
-              <div className="text-xs text-neutral-500 mt-0.5">Logo placeholder</div>
-            </div>
-          ))}
-        </div>
+        {loading && !data ? (
+          <div className="text-neutral-500">Loading sponsors…</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {sponsors.map((s, i) => {
+              const logoUrl = resolveImage(s.logo, 240);
+              const inner = (
+                <>
+                  <div className="w-12 h-12 rounded-xl bg-white border border-neutral-200 flex items-center justify-center mb-3 overflow-hidden">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt={s.name} className="w-full h-full object-contain" />
+                    ) : (
+                      <Handshake className="w-6 h-6 text-[#6b8a0a]" />
+                    )}
+                  </div>
+                  <div className="text-neutral-900 text-sm" style={{ fontWeight: 600 }}>{s.name}</div>
+                  {!logoUrl && <div className="text-xs text-neutral-500 mt-0.5">Logo placeholder</div>}
+                </>
+              );
+              const className =
+                "aspect-[3/2] rounded-2xl bg-neutral-50 border border-neutral-200 hover:border-[#AFDC1C] hover:bg-[#AFDC1C]/5 transition-colors flex flex-col items-center justify-center p-4 text-center";
+              return s.url && s.url !== "#" ? (
+                <a key={i} href={s.url} target="_blank" rel="noreferrer" className={className}>
+                  {inner}
+                </a>
+              ) : (
+                <div key={i} className={className}>{inner}</div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-10 rounded-3xl bg-gradient-to-br from-neutral-900 to-neutral-800 text-white p-8 lg:p-10 flex flex-wrap gap-6 items-center justify-between">
           <div className="max-w-xl">

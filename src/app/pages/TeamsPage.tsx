@@ -2,22 +2,63 @@ import { PageHero } from "../components/PageHero";
 import { Teams } from "../components/Teams";
 import { Trophy, Calendar, ArrowRight, ShoppingBag } from "lucide-react";
 import { Link } from "react-router";
+import { useSanityQuery } from "../../sanity/hooks";
 
-const fixtures = [
+const fallbackFixtures = [
   { date: "Sat 00 Xxx", home: "HPFC Example Team", away: "Example Opponent FC", time: "00:00", venue: "Example Venue" },
   { date: "Sat 00 Xxx", home: "HPFC Example Team", away: "Example Opponent FC", time: "00:00", venue: "Example Venue" },
   { date: "Sun 00 Xxx", home: "Example Opponent FC", away: "HPFC Example Team", time: "00:00", venue: "Example Venue" },
   { date: "Sun 00 Xxx", home: "HPFC Example Team", away: "Example Opponent FC", time: "00:00", venue: "Example Venue" },
 ];
 
-const results = [
+const fallbackResults = [
   { team: "Example Team", score: "0 – 0", opp: "vs Example Opponent FC", note: "Placeholder result" },
   { team: "Example Team", score: "0 – 0", opp: "vs Example Opponent FC", note: "Placeholder result" },
   { team: "Example Team", score: "0 – 0", opp: "vs Example Opponent FC", note: "Placeholder result" },
   { team: "Example Team", score: "0 – 0", opp: "vs Example Opponent FC", note: "Placeholder result" },
 ];
 
+const FIXTURES_QUERY = `*[_type == "fixture"] | order(date asc) {
+  _id, date, homeTeam, awayTeam, kickoff, venue, kind, score, note
+}`;
+
+function formatDate(d?: string) {
+  if (!d) return "";
+  try {
+    const dt = new Date(d);
+    return dt.toLocaleDateString("en-GB", { weekday: "short", day: "2-digit", month: "short" });
+  } catch {
+    return d;
+  }
+}
+
 export function TeamsPage() {
+  const { data, loading } = useSanityQuery<any[]>(FIXTURES_QUERY);
+
+  const sanityFixtures = (data || []).filter((f) => f.kind !== "result");
+  const sanityResults = (data || []).filter((f) => f.kind === "result");
+
+  const fixtures =
+    sanityFixtures.length > 0
+      ? sanityFixtures.map((f) => ({
+          date: formatDate(f.date),
+          home: f.homeTeam || "",
+          away: f.awayTeam || "",
+          time: f.kickoff || "",
+          venue: f.venue || "",
+        }))
+      : fallbackFixtures;
+
+  const results =
+    sanityResults.length > 0
+      ? sanityResults.map((r) => ({
+          team: r.homeTeam || "",
+          score: r.score || "",
+          opp: `vs ${r.awayTeam || ""}`,
+          note: r.note || "",
+        }))
+      : fallbackResults;
+
   return (
     <>
       <PageHero
@@ -38,18 +79,22 @@ export function TeamsPage() {
                   This weekend's fixtures
                 </h2>
               </div>
-              <div className="rounded-2xl border border-neutral-200 overflow-hidden">
-                {fixtures.map((f, i) => (
-                  <div key={i} className={`p-4 flex flex-wrap gap-3 items-center ${i ? "border-t border-neutral-100" : ""}`}>
-                    <div className="text-xs text-neutral-500 w-20 shrink-0">{f.date}</div>
-                    <div className="flex-1 min-w-[180px]">
-                      <div className="text-neutral-900" style={{ fontWeight: 600 }}>{f.home} <span className="text-neutral-400 mx-1">v</span> {f.away}</div>
-                      <div className="text-xs text-neutral-500">{f.venue}</div>
+              {loading && !data ? (
+                <div className="text-neutral-500">Loading fixtures…</div>
+              ) : (
+                <div className="rounded-2xl border border-neutral-200 overflow-hidden">
+                  {fixtures.map((f, i) => (
+                    <div key={i} className={`p-4 flex flex-wrap gap-3 items-center ${i ? "border-t border-neutral-100" : ""}`}>
+                      <div className="text-xs text-neutral-500 w-20 shrink-0">{f.date}</div>
+                      <div className="flex-1 min-w-[180px]">
+                        <div className="text-neutral-900" style={{ fontWeight: 600 }}>{f.home} <span className="text-neutral-400 mx-1">v</span> {f.away}</div>
+                        <div className="text-xs text-neutral-500">{f.venue}</div>
+                      </div>
+                      <div className="text-neutral-900" style={{ fontWeight: 700 }}>{f.time}</div>
                     </div>
-                    <div className="text-neutral-900" style={{ fontWeight: 700 }}>{f.time}</div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
@@ -59,19 +104,23 @@ export function TeamsPage() {
                   Recent results
                 </h2>
               </div>
-              <div className="rounded-2xl border border-neutral-200 overflow-hidden">
-                {results.map((r, i) => (
-                  <div key={i} className={`p-4 flex items-center gap-4 ${i ? "border-t border-neutral-100" : ""}`}>
-                    <div className="flex-1">
-                      <div className="text-neutral-900" style={{ fontWeight: 600 }}>{r.team}</div>
-                      <div className="text-xs text-neutral-500">{r.opp} · {r.note}</div>
+              {loading && !data ? (
+                <div className="text-neutral-500">Loading results…</div>
+              ) : (
+                <div className="rounded-2xl border border-neutral-200 overflow-hidden">
+                  {results.map((r, i) => (
+                    <div key={i} className={`p-4 flex items-center gap-4 ${i ? "border-t border-neutral-100" : ""}`}>
+                      <div className="flex-1">
+                        <div className="text-neutral-900" style={{ fontWeight: 600 }}>{r.team}</div>
+                        <div className="text-xs text-neutral-500">{r.opp} · {r.note}</div>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-lg bg-[#AFDC1C]/20 text-neutral-900" style={{ fontWeight: 700 }}>
+                        {r.score}
+                      </div>
                     </div>
-                    <div className="px-3 py-1.5 rounded-lg bg-[#AFDC1C]/20 text-neutral-900" style={{ fontWeight: 700 }}>
-                      {r.score}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -4,6 +4,8 @@ import {
   MessageCircle,
   Mail,
 } from "lucide-react";
+import { usePage, getPageSection } from "../../sanity/hooks";
+import { PortableText } from "../../sanity/PortableText";
 
 const fees = [
   {
@@ -48,6 +50,8 @@ const steps = [
 
 export function Join() {
   const [submitted, setSubmitted] = useState(false);
+  const { data: page } = usePage("join");
+  const intro = getPageSection(page, "intro");
 
   return (
     <section className="py-20 lg:py-28 bg-white">
@@ -68,12 +72,15 @@ export function Join() {
               letterSpacing: "-0.02em",
             }}
           >
-            Join Heyford Park FC
+            {intro?.heading || "Join Heyford Park FC"}
           </h2>
-          <p className="mt-4 text-lg text-neutral-600">
-            Everything you need to know before signing your
-            child up.
-          </p>
+          <div className="mt-4 text-lg text-neutral-600">
+            {intro?.body ? (
+              <PortableText value={intro.body} />
+            ) : (
+              <p>Everything you need to know before signing your child up.</p>
+            )}
+          </div>
         </div>
 
         {/* 01 — Places */}

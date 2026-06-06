@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Shield, HeartPulse, FileText, Handshake, Download } from "lucide-react";
+import { usePage, getPageSection } from "../../sanity/hooks";
+import { PortableText } from "../../sanity/PortableText";
 
 const tabs = [
   {
@@ -57,7 +59,15 @@ const tabs = [
 
 export function ClubInfo() {
   const [active, setActive] = useState(tabs[0].id);
-  const current = tabs.find((t) => t.id === active)!;
+  const fallbackCurrent = tabs.find((t) => t.id === active)!;
+  const { data: page } = usePage("club-info");
+  const cmsSection = getPageSection(page, active);
+  const current = {
+    id: fallbackCurrent.id,
+    label: cmsSection?.heading || fallbackCurrent.label,
+    icon: fallbackCurrent.icon,
+    body: cmsSection?.body ? <PortableText value={cmsSection.body} /> : fallbackCurrent.body,
+  };
 
   return (
     <section className="py-20 lg:py-28 bg-white">

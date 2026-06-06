@@ -1,8 +1,14 @@
 import { ArrowRight, MapPin, ShoppingBag, Users } from "lucide-react";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { usePage, getPageSection } from "../../sanity/hooks";
+import { PortableText } from "../../sanity/PortableText";
 
 export function Hero() {
+  const { data: page } = usePage("home");
+  const hero = getPageSection(page, "hero");
+  const heroHeading = hero?.heading;
+  const heroBody = hero?.body;
   return (
     <section className="relative overflow-hidden bg-neutral-900 text-white">
       <ImageWithFallback
@@ -19,11 +25,15 @@ export function Hero() {
             England Football Accredited · 250+ players
           </div>
           <h1 className="text-white" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
-            Where every child <span className="text-[#AFDC1C]">finds their game.</span>
+            {heroHeading || <>Where every child <span className="text-[#AFDC1C]">finds their game.</span></>}
           </h1>
-          <p className="mt-5 text-lg text-neutral-200 max-w-2xl">
-            Boys & girls football for ages 4–16. Built on Teamwork, Respect, and Inspire — right here in Heyford Park.
-          </p>
+          <div className="mt-5 text-lg text-neutral-200 max-w-2xl">
+            {heroBody ? (
+              <PortableText value={heroBody} />
+            ) : (
+              <p>Boys &amp; girls football for ages 4–16. Built on Teamwork, Respect, and Inspire — right here in Heyford Park.</p>
+            )}
+          </div>
         </div>
 
         <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl">

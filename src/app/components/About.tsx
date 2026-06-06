@@ -1,5 +1,7 @@
 import { Users, Heart, Sparkles, Award, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import { usePage, getPageSection } from "../../sanity/hooks";
+import { PortableText } from "../../sanity/PortableText";
 
 const values = [
   { icon: Users, title: "Teamwork", body: "We win, lose, and grow together. No player left on the sideline." },
@@ -8,6 +10,8 @@ const values = [
 ];
 
 export function About() {
+  const { data: page } = usePage("about");
+  const intro = getPageSection(page, "intro");
   return (
     <section className="py-20 lg:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
@@ -15,13 +19,19 @@ export function About() {
           <div>
             <div className="text-sm text-[#6b8a0a] mb-3" style={{ fontWeight: 600 }}>ABOUT THE CLUB</div>
             <h2 className="text-neutral-900" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-              A community club for every child who wants to play.
+              {intro?.heading || "A community club for every child who wants to play."}
             </h2>
-            <p className="mt-5 text-neutral-600 text-lg leading-relaxed">
-              Founded in 2019, Heyford Park FC has grown to over 250 registered players across 20 teams,
-              boys' and girls' from U7 to U16. We're a volunteer-run, England Football accredited club rooted in
-              Heyford Park — and we've built our coaching around three values that come before any scoreline.
-            </p>
+            <div className="mt-5 text-neutral-600 text-lg leading-relaxed">
+              {intro?.body ? (
+                <PortableText value={intro.body} />
+              ) : (
+                <p>
+                  Founded in 2019, Heyford Park FC has grown to over 250 registered players across 20 teams,
+                  boys' and girls' from U7 to U16. We're a volunteer-run, England Football accredited club rooted in
+                  Heyford Park — and we've built our coaching around three values that come before any scoreline.
+                </p>
+              )}
+            </div>
 
             <div className="mt-8 inline-flex items-center gap-3 p-4 rounded-lg border border-neutral-200 bg-neutral-50">
               <div className="w-12 h-12 rounded-full bg-[#AFDC1C] flex items-center justify-center shrink-0">
